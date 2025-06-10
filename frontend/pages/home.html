@@ -1,0 +1,179 @@
+<div class="dashboard">
+    <!-- En-tête du dashboard -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <p class="lead fw-bold text-dark">Inetum Pulse</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary me-2">
+                <i class="bi bi-plus-circle"></i> Nouveau Projet
+            </button>
+            <button class="btn btn-outline-primary">
+                <i class="bi bi-download"></i> Exporter
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <select class="form-select" id="buFilter">
+                                <option value="">Toutes les BU</option>
+                                <option>BU Digital</option>
+                                <option>BU Cloud</option>
+                                <option>BU Consulting</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="clientFilter">
+                                <option value="">Tous les clients</option>
+                                <option>Client A</option>
+                                <option>Client B</option>
+                                <option>Client C</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="statusFilter">
+                                <option value="">Tous les statuts</option>
+                                <option>En cours</option>
+                                <option>En alerte</option>
+                                <option>Terminé</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Rechercher...">
+                                <button class="btn btn-outline-secondary" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Projets Actifs</h6>
+                    <h2 class="card-text">42</h2>
+                    <p class="mb-0"><small>+3 ce mois</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Marge Moyenne</h6>
+                    <h2 class="card-text">24.5%</h2>
+                    <p class="mb-0"><small>+2.1% vs dernier mois</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Satisfaction Client</h6>
+                    <h2 class="card-text">4.2/5</h2>
+                    <p class="mb-0"><small>85 avis</small></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Projets en Alerte</h6>
+                    <h2 class="card-text">3</h2>
+                    <p class="mb-0"><small>Action requise</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des Projets -->
+    <div class="card">
+        <div class="card-header bg-white">
+            <h5 class="card-title mb-0">Projets en cours</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Projet</th>
+                            <th>Client</th>
+                            <th>BU</th>
+                            <th>Avancement</th>
+                            <th>Marge</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-light-primary me-2">
+                                        <span class="avatar-content">DP</span>
+                                    </div>
+                                    <div>
+                                        Digital Platform
+                                        <div class="text-muted small">Web & Mobile</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Société Générale</td>
+                            <td>Digital</td>
+                            <td>
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 70%"></div>
+                                </div>
+                                <small>70%</small>
+                            </td>
+                            <td class="text-success">+25%</td>
+                            <td><span class="badge bg-success">En cours</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-light"><i class="bi bi-three-dots-vertical"></i></button>
+                            </td>
+                        </tr>
+                        <!-- Autres projets -->
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar bg-light-warning me-2">
+                                        <span class="avatar-content">CP</span>
+                                    </div>
+                                    <div>
+                                        Cloud Migration
+                                        <div class="text-muted small">Infrastructure</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Carrefour</td>
+                            <td>Cloud</td>
+                            <td>
+                                <div class="progress" style="height: 5px;">
+                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 45%"></div>
+                                </div>
+                                <small>45%</small>
+                            </td>
+                            <td class="text-danger">-5%</td>
+                            <td><span class="badge bg-warning">En alerte</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-light"><i class="bi bi-three-dots-vertical"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div> 

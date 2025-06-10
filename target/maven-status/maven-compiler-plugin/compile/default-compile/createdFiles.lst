@@ -1,0 +1,4 @@
+com\inetum\app\model\Contact.class
+com\inetum\app\repository\ContactRepository.class
+com\inetum\app\InetumApplication.class
+com\inetum\app\controller\ContactController.class
