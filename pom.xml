@@ -10,7 +10,7 @@
     </parent>
     
     <groupId>com.inetum</groupId>
-    <artifactId>inetum-app</artifactId>
+    <artifactId>pulse-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>inetum-app</name>
     <description>Application Inetum avec Spring Boot</description>
