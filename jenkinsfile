@@ -1,0 +1,133 @@
+pipeline {
+    agent any
+
+    environment {
+        // Nexus
+        NEXUS_URL = 'http://localhost:8081'
+        NEXUS_REPO = 'Livrable_repo'
+        ARTIFACT_ID = 'pulse-backend'
+        VERSION = '0.0.1-SNAPSHOT'
+        GROUP_ID = 'com.inetum'
+        PACKAGING = 'jar'
+        CREDENTIALS_ID = 'nexus-cred'
+
+        // Docker
+        DOCKER_IMAGE_NAME = 'pulse-backend'
+        DOCKER_IMAGE_TAG = 'latest'
+
+        // SonarQube
+        SONARQUBE_ENV = 'SonarQubeServer'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/AyaELMAFHOUM/pulse.git',
+                    branch: 'main',
+                    credentialsId: 'GITHUB_CREDENTIAL_ID'
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                echo '🔧 Compilation du backend Spring Boot...'
+                bat 'mvn clean package -DskipTests'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            environment {
+                SONAR_TOKEN = credentials('sonar-token')
+            }
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    bat "mvn sonar:sonar -Dsonar.token=${SONAR_TOKEN} -Dsonar.projectKey=${ARTIFACT_ID} 
+                    -Dsonar.projectName=${ARTIFACT_ID} -Dsonar.projectVersion=${VERSION} -DskipTests"
+                }
+            }
+        }
+
+        stage('Deploy JAR to Nexus') {
+            steps {
+                echo '📦 Déploiement du .jar sur Nexus...'
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${NEXUS_URL.replace('http://','')}",
+                    groupId: "${GROUP_ID}",
+                    version: "${VERSION}",
+                    repository: "${NEXUS_REPO}",
+                    credentialsId: "${CREDENTIALS_ID}",
+                    artifacts: [[
+                        artifactId: "${ARTIFACT_ID}",
+                        classifier: '',
+                        file: "target\\${ARTIFACT_ID}-${VERSION}.jar",
+                        type: 'jar'
+                    ]]
+                )
+            }
+        }
+
+        stage('Build Backend Docker Image') {
+            steps {
+                echo '🐳 Construction de l\'image Docker backend...'
+                bat "docker build -f Dockerfile.backend -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+            }
+        }
+
+        stage('Build Frontend Docker Image') {
+            steps {
+                echo ' Construction de l\'image Docker frontend...'
+                bat "docker build -f Dockerfile.frontend -t pulse-frontend:${DOCKER_IMAGE_TAG} ."
+            }
+        }
+
+        stage('Scan Docker Backend Image with Trivy') {
+            steps {
+                echo '🛡️ Scan de l\'image backend avec Trivy...'
+                bat """
+                    docker run --rm ^
+                        -v "%CD%:/root/.cache/" ^
+                        -v //var/run/docker.sock:/var/run/docker.sock ^
+                        aquasec/trivy image ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} > trivy-backend.txt
+                """
+            }
+        }
+
+        stage('Scan Docker Frontend Image with Trivy') {
+            steps {
+                echo '🛡️ Scan de l\'image frontend avec Trivy...'
+                bat """
+                    docker run --rm ^
+                        -v "%CD%:/root/.cache/" ^
+                        -v //var/run/docker.sock:/var/run/docker.sock ^
+                        aquasec/trivy image pulse-frontend:${DOCKER_IMAGE_TAG} > trivy-frontend.txt
+                """
+            }
+        }
+
+        stage('Push Docker Images to Docker Hub') {
+            steps {
+                echo '📤 Push des images Docker...'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-account', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+                    bat """
+                        docker tag ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} %DOCKERHUB_USER%/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                        docker tag pulse-frontend:${DOCKER_IMAGE_TAG} %DOCKERHUB_USER%/pulse-frontend:${DOCKER_IMAGE_TAG}
+                        docker login -u %DOCKERHUB_USER% -p %DOCKERHUB_PASS%
+                        docker push %DOCKERHUB_USER%/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                        docker push %DOCKERHUB_USER%/pulse-frontend:${DOCKER_IMAGE_TAG}
+                    """
+                }
+            }
+        }
+
+
+    post {
+        success {
+            echo '✅ Pipeline terminé avec succès !'
+        }
+        failure {
+            echo '❌ Échec du pipeline.'
+        }
+    }
+}
